@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUXECS2 Command</title>
+    <link rel="icon" href="https://i.postimg.cc/XqcpH1Nh/ZC.png">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            height: 100vh;
+            background-color: #121212;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #121212;
+            z-index: 1000;
+        }
+        
+        .loading-container {
+            display: flex;
+            font-size: min(15vw, 100px);
+            font-weight: bold;
+        }
+        
+        .letter {
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+        
+        .letter:nth-child(2) {
+            animation-delay: 1s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .fade-out {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        #main-content {
+            display: none;
+            height: 100%;
+        }
+        
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+        
+        .main-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            font-size: clamp(14px, 3vw, 16px);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+            z-index: 100;
+            border-radius: 5px;
+        }
+        
+        #back-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dynamic-text {
+            text-align: center;
+            font-size: clamp(30px, 8vw, 100px);
+            color: white;
+            margin-bottom: 10vh;
+            opacity: 0;
+            animation: fadeText 3s infinite;
+            padding: 0 20px;
+        }
+        
+        @keyframes fadeText {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+        
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        .button {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            font-size: clamp(14px, 4vw, 18px);
+            padding: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            width: 100%;
+        }
+        
+        .button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: transparent;
+            z-index: 1001;
+            border-radius: 5px;
+            overflow: hidden;
+            opacity: 0;
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+            opacity: 1;
+            transform: scaleY(1);
+        }
+        
+        .dropdown-content li {
+            padding: 12px;
+            cursor: pointer;
+            color: white;
+            list-style-type: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: clamp(14px, 4vw, 16px);
+            border: 2px solid white;
+            border-top: none;
+            background-color: #121212;
+        }
+        
+        .dropdown-content li:hover {
+            background-color: #333333;
+        }
+        
+        .dropdown-container {
+            position: relative;
+            margin-top: 15px;
+        }
+        
+        .dropdown-container:hover .dropdown-content {
+            display: block;
+            opacity: 1;
+            transform: scaleY(1);
+        }
+        
+        .content-block {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            display: none;
+            padding: 20px;
+        }
+        
+        .content-block h2 {
+            font-size: clamp(24px, 6vw, 48px);
+            margin-bottom: 20px;
+        }
+        
+        .content-block p {
+            font-size: clamp(16px, 4vw, 24px);
+            line-height: 1.5;
+        }
+        
+        .copyright {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: clamp(10px, 2vw, 12px);
+            color: rgba(255, 255, 255, 0.5);
+            width: 100%;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        @media (max-height: 500px) {
+            .dynamic-text {
+                margin-bottom: 5vh;
+                font-size: clamp(20px, 6vw, 30px);
+            }
+            
+            .buttons-container {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-container">
+            <div class="letter">LU</div>
+            <div class="letter">X</div>
+        </div>
+    </div>
+    
+    <div id="main-content">
+        <video id="background-video" autoplay muted loop>
+            <source src="https://dl.dropboxusercontent.com/s/q2atq0k4ghou72wy4tzwr/mixkit-stars-in-space-background-1610-4k.mp4?rlkey=fjd5rem01pwbctx01ktfnpe02&st=7pzi2nob&dl=0" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        
+        <button id="back-button" onclick="goBack()">Назад</button>
+        
+        <div class="main-interface" id="main-interface">
+            <div class="dynamic-text" id="dynamic-text"></div>
+            
+            <div class="buttons-container">
+                <button class="button" onclick="showAbout()">О нас</button>
+                <div class="dropdown-container">
+                    <button class="button" onclick="toggleDropdown()">Проекты ▼</button>
+                    <ul class="dropdown-content" id="project-dropdown">
+                        <li onclick="selectProject('Проект 1', 'luxecs2.ru')">LUXECS2</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <p class="copyright">© 2025 LUXECS2 Command. Все права защищены.</p>
+        </div>
+        
+        <div class="content-block" id="project-info">
+            <h2 id="project-title"></h2>
+            <p id="project-description"></p>
+        </div>
+        
+        <div class="content-block" id="about-info">
+            <h2>О нас</h2>
+            <p>Скоро</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                const mainContent = document.getElementById('main-content');
+                
+                loadingScreen.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    
+                    document.getElementById('main-interface').style.display = 'flex';
+                    startDynamicText();
+                }, 1000);
+            }, 3000);
+        });
+        
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        
+        let dynamicTextInterval;
+        const dynamicTexts = [
+            "Создание серверов CS2",
+            "Делаем игры",
+            "Пишем переводы",
+            "Создаем программы"
+        ];
+        let currentTextIndex = 0;
+        
+        function startDynamicText() {
+            updateDynamicText();
+            dynamicTextInterval = setInterval(updateDynamicText, 3000);
+        }
+        
+        function stopDynamicText() {
+            clearInterval(dynamicTextInterval);
+        }
+        
+        function updateDynamicText() {
+            const element = document.getElementById('dynamic-text');
+            element.textContent = dynamicTexts[currentTextIndex];
+            currentTextIndex = (currentTextIndex + 1) % dynamicTexts.length;
+        }
+       
+        function toggleDropdown() {
+            const dropdown = document.getElementById('project-dropdown');
+            dropdown.classList.toggle('show');
+        }
+        
+        function selectProject(title, description) {
+            stopDynamicText();
+            
+            document.getElementById('main-interface').style.display = 'none';
+            
+            document.getElementById('project-title').textContent = title;
+            document.getElementById('project-description').textContent = description;
+            document.getElementById('project-info').style.display = 'block';
+            
+            document.getElementById('back-button').style.display = 'block';
+        }
+        
+        function showAbout() {
+            stopDynamicText();
+            
+            document.getElementById('main-interface').style.display = 'none';
+            
+            document.getElementById('about-info').style.display = 'block';
+            
+            document.getElementById('back-button').style.display = 'block';
+        }
+        
+        function goBack() {
+            document.getElementById('project-info').style.display = 'none';
+            document.getElementById('about-info').style.display = 'none';
+
+            document.getElementById('main-interface').style.display = 'flex';
+            
+            document.getElementById('back-button').style.display = 'none';
+             
+            startDynamicText();
+        }
+        
+        const dropdownContainer = document.querySelector('.dropdown-container');
+        const dropdown = document.getElementById('project-dropdown');
+        
+        dropdownContainer.addEventListener('mouseleave', () => {
+            dropdown.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
