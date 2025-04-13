@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -74,6 +74,7 @@
             height: 100%;
             object-fit: cover;
             z-index: -1;
+            filter: brightness(0.4);
         }
         
         .overlay {
@@ -82,7 +83,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background: linear-gradient(45deg, rgba(18,18,18,0.9) 0%, rgba(40,40,40,0.7) 100%);
             z-index: -1;
         }
         
@@ -102,8 +103,8 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: transparent;
-            border: 2px solid white;
+            background-color: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
             color: white;
             font-size: clamp(14px, 3vw, 16px);
             padding: 10px 20px;
@@ -111,11 +112,13 @@
             transition: all 0.3s ease;
             display: none;
             z-index: 100;
-            border-radius: 5px;
+            border-radius: 25px;
+            backdrop-filter: blur(5px);
         }
         
         #back-button:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255,255,255,0.2);
+            transform: scale(1.05);
         }
         
         .dynamic-text {
@@ -126,6 +129,7 @@
             opacity: 0;
             animation: fadeText 3s infinite;
             padding: 0 20px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
         }
         
         @keyframes fadeText {
@@ -138,23 +142,25 @@
             flex-direction: column;
             gap: 15px;
             width: 80%;
-            max-width: 400px;
+            max-width: 500px;
         }
         
         .button {
-            background-color: transparent;
-            border: 2px solid white;
+            background-color: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
             color: white;
             font-size: clamp(14px, 4vw, 18px);
-            padding: 12px 0;
+            padding: 15px 0;
             cursor: pointer;
             transition: all 0.3s ease;
-            border-radius: 5px;
+            border-radius: 15px;
             width: 100%;
+            backdrop-filter: blur(5px);
         }
         
         .button:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255,255,255,0.2);
+            transform: scale(1.02);
         }
         
         .dropdown-content {
@@ -163,14 +169,17 @@
             top: 100%;
             left: 0;
             width: 100%;
-            background-color: transparent;
+            background-color: rgba(18,18,18,0.9);
             z-index: 1001;
-            border-radius: 5px;
+            border-radius: 15px;
             overflow: hidden;
             opacity: 0;
             transform: scaleY(0);
             transform-origin: top;
             transition: all 0.3s ease;
+            margin-top: 5px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
         }
         
         .dropdown-content.show {
@@ -180,31 +189,28 @@
         }
         
         .dropdown-content li {
-            padding: 12px;
+            padding: 15px;
             cursor: pointer;
             color: white;
             list-style-type: none;
             transition: all 0.3s ease;
             text-align: center;
             font-size: clamp(14px, 4vw, 16px);
-            border: 2px solid white;
-            border-top: none;
-            background-color: #121212;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .dropdown-content li:last-child {
+            border-bottom: none;
         }
         
         .dropdown-content li:hover {
-            background-color: #333333;
+            background-color: rgba(255,255,255,0.1);
+            transform: translateX(10px);
         }
         
         .dropdown-container {
             position: relative;
             margin-top: 15px;
-        }
-        
-        .dropdown-container:hover .dropdown-content {
-            display: block;
-            opacity: 1;
-            transform: scaleY(1);
         }
         
         .content-block {
@@ -216,17 +222,23 @@
             max-width: 800px;
             text-align: center;
             display: none;
-            padding: 20px;
+            padding: 30px;
+            background: rgba(18,18,18,0.9);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
         }
         
         .content-block h2 {
             font-size: clamp(24px, 6vw, 48px);
             margin-bottom: 20px;
+            color: #fff;
         }
         
         .content-block p {
             font-size: clamp(16px, 4vw, 24px);
-            line-height: 1.5;
+            line-height: 1.6;
+            color: #ccc;
         }
         
         .copyright {
@@ -240,15 +252,26 @@
             text-align: center;
             padding: 0 20px;
         }
-        
-        @media (max-height: 500px) {
-            .dynamic-text {
-                margin-bottom: 5vh;
-                font-size: clamp(20px, 6vw, 30px);
+
+        .project-link {
+            color: #4CAF50;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .project-link:hover {
+            color: #66BB6A;
+            border-bottom-color: currentColor;
+        }
+
+        @media (max-width: 768px) {
+            .button {
+                padding: 12px 0;
             }
             
-            .buttons-container {
-                gap: 10px;
+            .dropdown-content li {
+                padding: 12px;
             }
         }
     </style>
@@ -277,7 +300,9 @@
                 <div class="dropdown-container">
                     <button class="button" onclick="toggleDropdown()">Проекты ▼</button>
                     <ul class="dropdown-content" id="project-dropdown">
-                        <li onclick="selectProject('Проект 1', 'luxecs2.ru')">LUXECS2</li>
+                        <li onclick="window.open('https://luxecs2.ru', '_blank')">LUXECS2</li>
+                        <li onclick="window.open('#', '_blank')">Проект 2 (скоро)</li>
+                        <li onclick="window.open('#', '_blank')">Проект 3 (скоро)</li>
                     </ul>
                 </div>
             </div>
@@ -285,14 +310,14 @@
             <p class="copyright">© 2025 LUXECS2 Command. Все права защищены.</p>
         </div>
         
-        <div class="content-block" id="project-info">
-            <h2 id="project-title"></h2>
-            <p id="project-description"></p>
-        </div>
-        
         <div class="content-block" id="about-info">
             <h2>О нас</h2>
-            <p>Скоро</p>
+            <p>Мы профессиональная команда разработчиков, специализирующаяся на:</p>
+            <p>• Создании игровых серверов CS2<br>
+               • Разработке модификаций и плагинов<br>
+               • Создании пользовательских программ<br>
+               • Переводе игрового контента</p>
+            <p>Свяжитесь с нами: <a href="mailto:contact@example.com" class="project-link">contact@example.com</a></p>
         </div>
     </div>
 
@@ -345,45 +370,37 @@
             dropdown.classList.toggle('show');
         }
         
-        function selectProject(title, description) {
-            stopDynamicText();
-            
-            document.getElementById('main-interface').style.display = 'none';
-            
-            document.getElementById('project-title').textContent = title;
-            document.getElementById('project-description').textContent = description;
-            document.getElementById('project-info').style.display = 'block';
-            
-            document.getElementById('back-button').style.display = 'block';
-        }
-        
         function showAbout() {
             stopDynamicText();
-            
             document.getElementById('main-interface').style.display = 'none';
-            
             document.getElementById('about-info').style.display = 'block';
-            
             document.getElementById('back-button').style.display = 'block';
         }
         
         function goBack() {
-            document.getElementById('project-info').style.display = 'none';
             document.getElementById('about-info').style.display = 'none';
-
             document.getElementById('main-interface').style.display = 'flex';
-            
             document.getElementById('back-button').style.display = 'none';
-             
             startDynamicText();
         }
-        
-        const dropdownContainer = document.querySelector('.dropdown-container');
-        const dropdown = document.getElementById('project-dropdown');
-        
-        dropdownContainer.addEventListener('mouseleave', () => {
-            dropdown.classList.remove('show');
+
+        // Закрытие dropdown при клике вне области
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('project-dropdown');
+            if (!e.target.closest('.dropdown-container')) {
+                dropdown.classList.remove('show');
+            }
         });
+
+        // Адаптив для мобильных устройств
+        let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+            document.querySelectorAll('.dropdown-content li').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.getElementById('project-dropdown').classList.remove('show');
+                });
+            });
+        }
     </script>
 </body>
 </html>
