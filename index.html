@@ -4,8 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUXECS2 Command</title>
-    <link rel="icon" href="https://i.postimg.cc/XqcpH1Nh/ZC.png">
+    <link rel="icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-bg: #050505;
+            --secondary-bg: #0d0d0d;
+            --accent-color: #00d4ff;
+            --text-color: #ffffff;
+            --text-secondary: #aaaaaa;
+            --border-color: rgba(255,255,255,0.15);
+            --hover-bg: rgba(0,212,255,0.08);
+            --blur-strength: 12px;
+        }
         * {
             box-sizing: border-box;
             margin: 0;
@@ -14,13 +27,14 @@
         
         body {
             height: 100vh;
-            background-color: #121212;
-            color: white;
-            font-family: 'Arial', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
             touch-action: manipulation;
+            line-height: 1.5;
         }
         
         .loading-screen {
@@ -32,14 +46,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #121212;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
             z-index: 1000;
+            backdrop-filter: blur(var(--blur-strength));
         }
         
         .loading-container {
             display: flex;
             font-size: min(15vw, 100px);
             font-weight: bold;
+            position: relative;
+        }
+
+        .loading-container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, var(--accent-color), transparent, var(--accent-color));
+            border-radius: 20px;
+            z-index: -1;
+            animation: loadingGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes loadingGlow {
+            from { opacity: 0.3; transform: scale(1); }
+            to { opacity: 0.8; transform: scale(1.05); }
         }
         
         .letter {
@@ -74,7 +108,8 @@
             height: 100%;
             object-fit: cover;
             z-index: -1;
-            filter: brightness(0.4);
+            filter: brightness(0.4) contrast(1.1) saturate(1.2);
+            will-change: transform;
         }
         
         .overlay {
@@ -83,8 +118,42 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(18,18,18,0.9) 0%, rgba(40,40,40,0.7) 100%);
+            background: linear-gradient(45deg, rgba(5,5,5,0.98) 0%, rgba(13,13,13,0.9) 50%, rgba(0,212,255,0.05) 100%);
             z-index: -1;
+            backdrop-filter: blur(1px);
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { width: 4px; height: 4px; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 6px; height: 6px; left: 20%; animation-delay: 1s; }
+        .particle:nth-child(3) { width: 3px; height: 3px; left: 30%; animation-delay: 2s; }
+        .particle:nth-child(4) { width: 5px; height: 5px; left: 40%; animation-delay: 3s; }
+        .particle:nth-child(5) { width: 4px; height: 4px; left: 50%; animation-delay: 4s; }
+        .particle:nth-child(6) { width: 3px; height: 3px; left: 60%; animation-delay: 5s; }
+        .particle:nth-child(7) { width: 5px; height: 5px; left: 70%; animation-delay: 6s; }
+        .particle:nth-child(8) { width: 4px; height: 4px; left: 80%; animation-delay: 7s; }
+        .particle:nth-child(9) { width: 6px; height: 6px; left: 90%; animation-delay: 8s; }
+        .particle:nth-child(10) { width: 3px; height: 3px; left: 95%; animation-delay: 9s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            50% { transform: translateY(50vh) rotate(180deg); opacity: 0.6; }
         }
         
         .main-interface {
@@ -97,70 +166,106 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
         
         #back-button {
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.3);
-            color: white;
+            background: var(--hover-bg);
+            border: 2px solid var(--accent-color);
+            color: var(--text-color);
             font-size: clamp(14px, 3vw, 16px);
-            padding: 10px 20px;
+            padding: 12px 24px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: none;
             z-index: 100;
-            border-radius: 25px;
-            backdrop-filter: blur(5px);
+            border-radius: 30px;
+            backdrop-filter: blur(var(--blur-strength));
+            box-shadow: 0 4px 20px rgba(0,212,255,0.2);
         }
         
         #back-button:hover {
-            background-color: rgba(255,255,255,0.2);
-            transform: scale(1.05);
+            background: var(--accent-color);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,212,255,0.4);
         }
         
         .dynamic-text {
             text-align: center;
-            font-size: clamp(30px, 8vw, 100px);
-            color: white;
-            margin-bottom: 10vh;
+            font-size: clamp(32px, 8vw, 120px);
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8vh;
             opacity: 0;
-            animation: fadeText 3s infinite;
+            animation: fadeText 4s infinite;
             padding: 0 20px;
-            text-shadow: 0 0 15px rgba(255,255,255,0.3);
+            text-shadow: 0 0 30px var(--accent-color), 0 0 60px rgba(0,212,255,0.5);
+            letter-spacing: -1px;
+            will-change: opacity, transform;
         }
         
         @keyframes fadeText {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
+            0%, 100% { opacity: 0; transform: translateY(20px); }
+            50% { opacity: 1; transform: translateY(0); }
         }
         
         .buttons-container {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            width: 80%;
+            width: 100%;
             max-width: 500px;
+            align-items: center;
         }
         
         .button {
-            background-color: rgba(255,255,255,0.1);
-            border: 2px solid rgba(255,255,255,0.3);
-            color: white;
-            font-size: clamp(14px, 4vw, 18px);
-            padding: 15px 0;
+            background: var(--hover-bg);
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            font-size: clamp(16px, 4vw, 20px);
+            font-weight: 500;
+            padding: 18px 0;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 15px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
             width: 100%;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(var(--blur-strength));
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+            will-change: transform, box-shadow;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2), transparent);
+            transition: left 0.5s;
+            will-change: left;
         }
         
         .button:hover {
-            background-color: rgba(255,255,255,0.2);
-            transform: scale(1.02);
+            background: var(--accent-color);
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,212,255,0.4);
+            border-color: var(--accent-color);
+        }
+
+        .button:hover::before {
+            left: 100%;
+        }
+
+        .button:active {
+            transform: scale(0.98) translateY(0px);
+            box-shadow: 0 2px 10px rgba(0,212,255,0.2);
         }
         
         .dropdown-content {
@@ -169,34 +274,38 @@
             top: 100%;
             left: 0;
             width: 100%;
-            background-color: rgba(18,18,18,0.9);
+            background: var(--secondary-bg);
             z-index: 1001;
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
             opacity: 0;
-            transform: scaleY(0);
+            transform: scaleY(0) translateY(-10px);
             transform-origin: top;
-            transition: all 0.3s ease;
-            margin-top: 5px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 8px;
+            backdrop-filter: blur(var(--blur-strength));
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            will-change: opacity, transform;
         }
         
         .dropdown-content.show {
             display: block;
             opacity: 1;
-            transform: scaleY(1);
+            transform: scaleY(1) translateY(0);
         }
         
         .dropdown-content li {
-            padding: 15px;
+            padding: 18px;
             cursor: pointer;
-            color: white;
+            color: var(--text-color);
             list-style-type: none;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
-            font-size: clamp(14px, 4vw, 16px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: clamp(16px, 4vw, 18px);
+            font-weight: 400;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
         }
         
         .dropdown-content li:last-child {
@@ -204,8 +313,9 @@
         }
         
         .dropdown-content li:hover {
-            background-color: rgba(255,255,255,0.1);
-            transform: translateX(10px);
+            background: var(--hover-bg);
+            transform: translateX(8px);
+            color: var(--accent-color);
         }
         
         .dropdown-container {
@@ -219,59 +329,193 @@
             left: 50%;
             transform: translate(-50%, -50%);
             width: 90%;
-            max-width: 800px;
+            max-width: 900px;
             text-align: center;
             display: none;
-            padding: 30px;
-            background: rgba(18,18,18,0.9);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
+            padding: 40px;
+            background: var(--secondary-bg);
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(var(--blur-strength));
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
         }
         
         .content-block h2 {
-            font-size: clamp(24px, 6vw, 48px);
-            margin-bottom: 20px;
-            color: #fff;
+            font-size: clamp(28px, 6vw, 56px);
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--text-color);
+            text-shadow: 0 0 20px var(--accent-color);
         }
-        
+
         .content-block p {
-            font-size: clamp(16px, 4vw, 24px);
-            line-height: 1.6;
-            color: #ccc;
+            font-size: clamp(18px, 4vw, 26px);
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
         }
         
         .copyright {
             position: fixed;
-            bottom: 10px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: clamp(10px, 2vw, 12px);
-            color: rgba(255, 255, 255, 0.5);
+            font-size: clamp(12px, 2vw, 14px);
+            color: var(--text-secondary);
             width: 100%;
             text-align: center;
             padding: 0 20px;
+            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 0 20px;
+            max-width: 400px;
+        }
+
+        .button-icon, .project-icon {
+            margin-right: 8px;
+            font-size: 1.1em;
+        }
+
+        .dropdown-arrow {
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-container .button:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .services-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
+            text-align: left;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            background: var(--hover-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .service-item:hover {
+            background: var(--accent-color);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,212,255,0.3);
+        }
+
+        .service-icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+
+        .contact-text {
+            margin-top: 25px;
+            font-size: clamp(16px, 4vw, 22px);
+        }
+
+        .glow-effect {
+            position: relative;
+        }
+
+        .glow-effect::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-color), transparent, var(--accent-color));
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .glow-effect:hover::after {
+            opacity: 0.3;
+        }
+
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px var(--accent-color));
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            from { filter: drop-shadow(0 0 20px var(--accent-color)); }
+            to { filter: drop-shadow(0 0 30px var(--accent-color)) brightness(1.1); }
         }
 
         .project-link {
-            color: #4CAF50;
+            color: var(--accent-color);
             text-decoration: none;
             border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
         }
 
         .project-link:hover {
-            color: #66BB6A;
+            color: #66d9ff;
             border-bottom-color: currentColor;
+            text-shadow: 0 0 10px currentColor;
         }
 
         @media (max-width: 768px) {
             .button {
-                padding: 12px 0;
+                padding: 16px 0;
+                font-size: clamp(14px, 4vw, 18px);
             }
-            
+
             .dropdown-content li {
-                padding: 12px;
+                padding: 16px;
+                font-size: clamp(14px, 4vw, 16px);
+            }
+
+            .dynamic-text {
+                font-size: clamp(28px, 8vw, 80px);
+                margin-bottom: 6vh;
+            }
+
+            .content-block {
+                padding: 30px 20px;
+                max-width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .buttons-container {
+                gap: 12px;
+                width: 90%;
+            }
+
+            .dynamic-text {
+                font-size: clamp(24px, 8vw, 60px);
+            }
+
+            .content-block h2 {
+                font-size: clamp(24px, 6vw, 40px);
+            }
+
+            .content-block p {
+                font-size: clamp(16px, 4vw, 20px);
             }
         }
     </style>
@@ -289,20 +533,44 @@
             <source src="https://dl.dropboxusercontent.com/s/q2atq0k4ghou72wy4tzwr/mixkit-stars-in-space-background-1610-4k.mp4?rlkey=fjd5rem01pwbctx01ktfnpe02&st=7pzi2nob&dl=0" type="video/mp4">
         </video>
         <div class="overlay"></div>
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
         
-        <button id="back-button" onclick="goBack()">Назад</button>
+        <button id="back-button" onclick="goBack()" class="glow-effect">Назад</button>
         
         <div class="main-interface" id="main-interface">
+            <img src="img/luxesc.png" alt="LUXECS2 Logo" class="logo">
+
             <div class="dynamic-text" id="dynamic-text"></div>
-            
+
             <div class="buttons-container">
-                <button class="button" onclick="showAbout()">О нас</button>
+                <button class="button glow-effect" onclick="showAbout()">
+                    <span class="button-icon">ℹ️</span> О нас
+                </button>
                 <div class="dropdown-container">
-                    <button class="button" onclick="toggleDropdown()">Проекты ▼</button>
+                    <button class="button glow-effect" onclick="toggleDropdown()">
+                        <span class="button-icon">🚀</span> Проекты <span class="dropdown-arrow">▼</span>
+                    </button>
                     <ul class="dropdown-content" id="project-dropdown">
-                        <li onclick="window.open('https://luxecs2.ru', '_blank')">LUXECS2</li>
-                        <li onclick="window.open('#', '_blank')">Проект 2 (скоро)</li>
-                        <li onclick="window.open('#', '_blank')">Проект 3 (скоро)</li>
+                        <li onclick="window.open('https://luxecs2.ru', '_blank')">
+                            <span class="project-icon">🎮</span> LUXECS2
+                        </li>
+                        <li onclick="window.open('#', '_blank')">
+                            <span class="project-icon">⏳</span> Проект 2 (скоро)
+                        </li>
+                        <li onclick="window.open('#', '_blank')">
+                            <span class="project-icon">⏳</span> Проект 3 (скоро)
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -310,97 +578,237 @@
             <p class="copyright">© 2025 LUXECS2 Command. Все права защищены.</p>
         </div>
         
-        <div class="content-block" id="about-info">
+        <div class="content-block glow-effect" id="about-info">
             <h2>О нас</h2>
             <p>Мы профессиональная команда разработчиков, специализирующаяся на:</p>
-            <p>• Создании игровых серверов CS2<br>
-               • Разработке модификаций и плагинов<br>
-               • Создании пользовательских программ<br>
-               • Переводе игрового контента</p>
-            <p>Свяжитесь с нами: <a href="mailto:contact@example.com" class="project-link">contact@example.com</a></p>
+            <div class="services-list">
+                <div class="service-item">
+                    <span class="service-icon">🎯</span>
+                    <span>Создании игровых серверов CS2</span>
+                </div>
+                <div class="service-item">
+                    <span class="service-icon">⚙️</span>
+                    <span>Разработке модификаций и плагинов</span>
+                </div>
+                <div class="service-item">
+                    <span class="service-icon">💻</span>
+                    <span>Создании пользовательских программ</span>
+                </div>
+                <div class="service-item">
+                    <span class="service-icon">🌐</span>
+                    <span>Переводе игрового контента</span>
+                </div>
+            </div>
+            <p class="contact-text">Свяжитесь с нами: <a href="mailto:contact@example.com" class="project-link">contact@example.com</a></p>
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loading-screen');
-                const mainContent = document.getElementById('main-content');
-                
-                loadingScreen.classList.add('fade-out');
-                
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    mainContent.style.display = 'block';
-                    
-                    document.getElementById('main-interface').style.display = 'flex';
-                    startDynamicText();
-                }, 1000);
-            }, 3000);
-        });
-        
-        document.addEventListener('contextmenu', (e) => e.preventDefault());
-        
-        let dynamicTextInterval;
-        const dynamicTexts = [
-            "Создание серверов CS2",
-            "Делаем игры",
-            "Пишем переводы",
-            "Создаем программы"
-        ];
-        let currentTextIndex = 0;
-        
-        function startDynamicText() {
-            updateDynamicText();
-            dynamicTextInterval = setInterval(updateDynamicText, 3000);
-        }
-        
-        function stopDynamicText() {
-            clearInterval(dynamicTextInterval);
-        }
-        
-        function updateDynamicText() {
-            const element = document.getElementById('dynamic-text');
-            element.textContent = dynamicTexts[currentTextIndex];
-            currentTextIndex = (currentTextIndex + 1) % dynamicTexts.length;
-        }
-       
-        function toggleDropdown() {
-            const dropdown = document.getElementById('project-dropdown');
-            dropdown.classList.toggle('show');
-        }
-        
-        function showAbout() {
-            stopDynamicText();
-            document.getElementById('main-interface').style.display = 'none';
-            document.getElementById('about-info').style.display = 'block';
-            document.getElementById('back-button').style.display = 'block';
-        }
-        
-        function goBack() {
-            document.getElementById('about-info').style.display = 'none';
-            document.getElementById('main-interface').style.display = 'flex';
-            document.getElementById('back-button').style.display = 'none';
-            startDynamicText();
-        }
+        // Класс для управления приложением
+        class LuxeCommandApp {
+            constructor() {
+                this.dynamicTextInterval = null;
+                this.dropdownTimeout = null;
+                this.resizeTimeout = null;
+                this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                this.dynamicTexts = [
+                    "Создание серверов CS2",
+                    "Делаем игры",
+                    "Пишем переводы",
+                    "Создаем программы"
+                ];
+                this.currentTextIndex = 0;
 
-        // Закрытие dropdown при клике вне области
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('project-dropdown');
-            if (!e.target.closest('.dropdown-container')) {
-                dropdown.classList.remove('show');
+                this.init();
             }
-        });
 
-        // Адаптив для мобильных устройств
-        let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (isMobile) {
-            document.querySelectorAll('.dropdown-content li').forEach(item => {
-                item.addEventListener('click', () => {
-                    document.getElementById('project-dropdown').classList.remove('show');
+            init() {
+                this.setupEventListeners();
+                this.optimizePerformance();
+                this.startLoadingSequence();
+            }
+
+            setupEventListeners() {
+                document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+                // Оптимизированные обработчики событий
+                document.addEventListener('click', this.handleGlobalClick.bind(this));
+                window.addEventListener('resize', this.handleResize.bind(this), { passive: true });
+
+                if (this.isMobile) {
+                    this.setupMobileEvents();
+                }
+            }
+
+            optimizePerformance() {
+                // Предзагрузка видео
+                const video = document.getElementById('background-video');
+                video.preload = 'auto';
+
+                // Добавляем все анимации в один стиль для оптимизации
+                this.injectStyles();
+            }
+
+            injectStyles() {
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fadeInInterface {
+                        from { opacity: 0; transform: translateY(30px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+
+                    @keyframes fadeOutInterface {
+                        from { opacity: 1; transform: translateY(0); }
+                        to { opacity: 0; transform: translateY(-20px); }
+                    }
+
+                    @keyframes slideInFromTop {
+                        from { opacity: 0; transform: translateY(-20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+
+                    @keyframes slideOut {
+                        from { opacity: 1; transform: translateY(0); }
+                        to { opacity: 0; transform: translateY(20px); }
+                    }
+
+                    @keyframes slideOutFromTop {
+                        from { opacity: 1; transform: translateY(0); }
+                        to { opacity: 0; transform: translateY(-20px); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            startLoadingSequence() {
+                setTimeout(() => {
+                    const loadingScreen = document.getElementById('loading-screen');
+                    const mainContent = document.getElementById('main-content');
+
+                    loadingScreen.classList.add('fade-out');
+
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        mainContent.style.display = 'block';
+
+                        const mainInterface = document.getElementById('main-interface');
+                        mainInterface.style.display = 'flex';
+                        mainInterface.style.opacity = '0';
+                        mainInterface.style.animation = 'fadeInInterface 1s ease-out forwards';
+
+                        this.startDynamicText();
+
+                        // Включаем видео после загрузки интерфейса
+                        const video = document.getElementById('background-video');
+                        video.play().catch(() => {
+                            // Обработка ошибки autoplay
+                        });
+                    }, 800);
+                }, 2000);
+            }
+
+            startDynamicText() {
+                this.updateDynamicText();
+                this.dynamicTextInterval = setInterval(() => this.updateDynamicText(), 4000);
+            }
+
+            stopDynamicText() {
+                if (this.dynamicTextInterval) {
+                    clearInterval(this.dynamicTextInterval);
+                    this.dynamicTextInterval = null;
+                }
+            }
+
+            updateDynamicText() {
+                const element = document.getElementById('dynamic-text');
+                element.textContent = this.dynamicTexts[this.currentTextIndex];
+                this.currentTextIndex = (this.currentTextIndex + 1) % this.dynamicTexts.length;
+            }
+
+            handleGlobalClick(e) {
+                const dropdown = document.getElementById('project-dropdown');
+                if (!e.target.closest('.dropdown-container')) {
+                    clearTimeout(this.dropdownTimeout);
+                    this.dropdownTimeout = setTimeout(() => {
+                        dropdown.classList.remove('show');
+                    }, 100);
+                }
+            }
+
+            handleResize() {
+                clearTimeout(this.resizeTimeout);
+                this.resizeTimeout = setTimeout(() => {
+                    // Пересчет clamp значений при необходимости
+                }, 250);
+            }
+
+            setupMobileEvents() {
+                document.querySelectorAll('.dropdown-content li').forEach(item => {
+                    item.addEventListener('touchstart', () => {
+                        setTimeout(() => {
+                            document.getElementById('project-dropdown').classList.remove('show');
+                        }, 150);
+                    }, { passive: true });
                 });
-            });
+            }
+
+            toggleDropdown() {
+                const dropdown = document.getElementById('project-dropdown');
+                dropdown.classList.toggle('show');
+            }
+
+            showAbout() {
+                this.stopDynamicText();
+                const mainInterface = document.getElementById('main-interface');
+                const aboutInfo = document.getElementById('about-info');
+                const backButton = document.getElementById('back-button');
+
+                mainInterface.style.animation = 'fadeOutInterface 0.5s ease-in forwards';
+                setTimeout(() => {
+                    mainInterface.style.display = 'none';
+                    aboutInfo.style.display = 'block';
+                    backButton.style.display = 'block';
+                    backButton.style.animation = 'slideInFromTop 0.5s ease-out';
+                }, 500);
+            }
+
+            goBack() {
+                const mainInterface = document.getElementById('main-interface');
+                const aboutInfo = document.getElementById('about-info');
+                const backButton = document.getElementById('back-button');
+
+                aboutInfo.style.animation = 'slideOut 0.5s ease-in forwards';
+                backButton.style.animation = 'slideOutFromTop 0.3s ease-in forwards';
+
+                setTimeout(() => {
+                    aboutInfo.style.display = 'none';
+                    backButton.style.display = 'none';
+                    mainInterface.style.display = 'flex';
+                    mainInterface.style.animation = 'fadeInInterface 0.5s ease-out forwards';
+                    this.startDynamicText();
+                }, 500);
+            }
         }
+
+        // Глобальные функции для обратной совместимости
+        let app;
+
+        function toggleDropdown() {
+            app.toggleDropdown();
+        }
+
+        function showAbout() {
+            app.showAbout();
+        }
+
+        function goBack() {
+            app.goBack();
+        }
+
+        // Инициализация приложения
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new LuxeCommandApp();
+        });
     </script>
 </body>
 </html>
