@@ -604,7 +604,6 @@
     </div>
 
     <script>
-        // Класс для управления приложением
         class LuxeCommandApp {
             constructor() {
                 this.dynamicTextInterval = null;
@@ -631,7 +630,6 @@
             setupEventListeners() {
                 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-                // Оптимизированные обработчики событий
                 document.addEventListener('click', this.handleGlobalClick.bind(this));
                 window.addEventListener('resize', this.handleResize.bind(this), { passive: true });
 
@@ -641,11 +639,9 @@
             }
 
             optimizePerformance() {
-                // Предзагрузка видео
                 const video = document.getElementById('background-video');
                 video.preload = 'auto';
 
-                // Добавляем все анимации в один стиль для оптимизации
                 this.injectStyles();
             }
 
@@ -698,7 +694,6 @@
 
                         this.startDynamicText();
 
-                        // Включаем видео после загрузки интерфейса
                         const video = document.getElementById('background-video');
                         video.play().catch(() => {
                             // Обработка ошибки autoplay
@@ -738,7 +733,6 @@
             handleResize() {
                 clearTimeout(this.resizeTimeout);
                 this.resizeTimeout = setTimeout(() => {
-                    // Пересчет clamp значений при необходимости
                 }, 250);
             }
 
@@ -790,7 +784,6 @@
             }
         }
 
-        // Глобальные функции для обратной совместимости
         let app;
 
         function toggleDropdown() {
@@ -805,7 +798,6 @@
             app.goBack();
         }
 
-        // Инициализация приложения
         document.addEventListener('DOMContentLoaded', () => {
             app = new LuxeCommandApp();
         });
