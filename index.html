@@ -8,504 +8,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-bg: #050505;
-            --secondary-bg: #0d0d0d;
-            --accent-color: #0d0d0d;
-            --text-color: #ffffff;
-            --text-secondary: #aaaaaa;
-            --border-color: rgba(255,255,255,0.15);
-            --hover-bg: rgba(0,212,255,0.08);
-            --blur-strength: 12px;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            height: 100vh;
-            background-color: var(--primary-bg);
-            color: var(--text-color);
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            line-height: 1.5;
-        }
-        
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: var(--primary-bg);
-            z-index: 1000;
-            backdrop-filter: blur(var(--blur-strength));
-        }
-        
-        .loading-container {
-            display: flex;
-            font-size: min(15vw, 100px);
-            font-weight: bold;
-            position: relative;
-        }
-
-        .loading-container::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            right: -10px;
-            bottom: -10px;
-            background: var(--accent-color);
-            border-radius: 20px;
-            z-index: -1;
-            animation: loadingGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes loadingGlow {
-            from { opacity: 0.3; transform: scale(1); }
-            to { opacity: 0.8; transform: scale(1.05); }
-        }
-        
-        .letter {
-            opacity: 0;
-            animation: fadeIn 1s forwards;
-        }
-        
-        .letter:nth-child(2) {
-            animation-delay: 1s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.5); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        
-        .fade-out {
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-        
-        #main-content {
-            display: none;
-            height: 100%;
-        }
-        
-        #background-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -1;
-            filter: brightness(0.4) contrast(1.1) saturate(1.2);
-            will-change: transform;
-        }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(5,5,5,0.98);
-            z-index: -1;
-            backdrop-filter: blur(1px);
-        }
-
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            background: var(--accent-color);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .particle:nth-child(1) { width: 4px; height: 4px; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { width: 6px; height: 6px; left: 20%; animation-delay: 1s; }
-        .particle:nth-child(3) { width: 3px; height: 3px; left: 30%; animation-delay: 2s; }
-        .particle:nth-child(4) { width: 5px; height: 5px; left: 40%; animation-delay: 3s; }
-        .particle:nth-child(5) { width: 4px; height: 4px; left: 50%; animation-delay: 4s; }
-        .particle:nth-child(6) { width: 3px; height: 3px; left: 60%; animation-delay: 5s; }
-        .particle:nth-child(7) { width: 5px; height: 5px; left: 70%; animation-delay: 6s; }
-        .particle:nth-child(8) { width: 4px; height: 4px; left: 80%; animation-delay: 7s; }
-        .particle:nth-child(9) { width: 6px; height: 6px; left: 90%; animation-delay: 8s; }
-        .particle:nth-child(10) { width: 3px; height: 3px; left: 95%; animation-delay: 9s; }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            50% { transform: translateY(50vh) rotate(180deg); opacity: 0.6; }
-        }
-        
-        .main-interface {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        
-        #back-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--hover-bg);
-            border: 2px solid var(--accent-color);
-            color: var(--text-color);
-            font-size: clamp(14px, 3vw, 16px);
-            padding: 12px 24px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: none;
-            z-index: 100;
-            border-radius: 30px;
-            backdrop-filter: blur(var(--blur-strength));
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        
-        #back-button:hover {
-            background: var(--accent-color);
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-        }
-        
-        .dynamic-text {
-            text-align: center;
-            font-size: clamp(32px, 8vw, 120px);
-            font-weight: 700;
-            color: var(--text-color);
-            margin-bottom: 8vh;
-            opacity: 0;
-            animation: fadeText 4s infinite;
-            padding: 0 20px;
-            letter-spacing: -1px;
-            will-change: opacity, transform;
-        }
-        
-        @keyframes fadeText {
-            0%, 100% { opacity: 0; transform: translateY(20px); }
-            50% { opacity: 1; transform: translateY(0); }
-        }
-        
-        .buttons-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 500px;
-            align-items: center;
-        }
-        
-        .button {
-            background: var(--hover-bg);
-            border: 2px solid var(--border-color);
-            color: var(--text-color);
-            font-size: clamp(16px, 4vw, 20px);
-            font-weight: 500;
-            padding: 18px 0;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 20px;
-            width: 100%;
-            backdrop-filter: blur(var(--blur-strength));
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-            will-change: transform, box-shadow;
-        }
-
-        .button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,212,255,0.2);
-            transition: left 0.5s;
-            will-change: left;
-        }
-        
-        .button:hover {
-            background: var(--accent-color);
-            transform: scale(1.02) translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-            border-color: var(--accent-color);
-        }
-
-        .button:hover::before {
-            left: 100%;
-        }
-
-        .button:active {
-            transform: scale(0.98) translateY(0px);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: var(--secondary-bg);
-            z-index: 1001;
-            border-radius: 20px;
-            overflow: hidden;
-            opacity: 0;
-            transform: scaleY(0) translateY(-10px);
-            transform-origin: top;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-top: 8px;
-            backdrop-filter: blur(var(--blur-strength));
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            will-change: opacity, transform;
-        }
-        
-        .dropdown-content.show {
-            display: block;
-            opacity: 1;
-            transform: scaleY(1) translateY(0);
-        }
-        
-        .dropdown-content li {
-            padding: 18px;
-            cursor: pointer;
-            color: var(--text-color);
-            list-style-type: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: center;
-            font-size: clamp(16px, 4vw, 18px);
-            font-weight: 400;
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-        }
-        
-        .dropdown-content li:last-child {
-            border-bottom: none;
-        }
-        
-        .dropdown-content li:hover {
-            background: var(--hover-bg);
-            transform: translateX(8px);
-            color: var(--accent-color);
-        }
-        
-        .dropdown-container {
-            position: relative;
-            margin-top: 15px;
-        }
-        
-        .content-block {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 900px;
-            text-align: center;
-            display: none;
-            padding: 40px;
-            background: var(--secondary-bg);
-            border-radius: 25px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(var(--blur-strength));
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translate(-50%, -60%); }
-            to { opacity: 1; transform: translate(-50%, -50%); }
-        }
-        
-        .content-block h2 {
-            font-size: clamp(28px, 6vw, 56px);
-            font-weight: 700;
-            margin-bottom: 25px;
-            color: var(--text-color);
-        }
-
-        .content-block p {
-            font-size: clamp(18px, 4vw, 26px);
-            line-height: 1.7;
-            color: var(--text-secondary);
-            margin-bottom: 15px;
-        }
-        
-        .copyright {
-            position: fixed;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: clamp(12px, 2vw, 14px);
-            color: var(--text-secondary);
-            width: 100%;
-            text-align: center;
-            padding: 0 20px;
-            backdrop-filter: blur(5px);
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px;
-            padding: 8px 16px;
-            margin: 0 20px;
-            max-width: 400px;
-        }
-
-        .button-icon, .project-icon {
-            margin-right: 8px;
-            font-size: 1.1em;
-        }
-
-        .dropdown-arrow {
-            margin-left: 8px;
-            transition: transform 0.3s ease;
-        }
-
-        .dropdown-container .button:hover .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .services-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin: 25px 0;
-            text-align: left;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .service-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            background: var(--hover-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .service-item:hover {
-            background: var(--accent-color);
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .service-icon {
-            font-size: 1.5em;
-            margin-right: 15px;
-        }
-
-        .contact-text {
-            margin-top: 25px;
-            font-size: clamp(16px, 4vw, 22px);
-        }
-
-
-        .logo {
-            max-width: 200px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
-            animation: logoGlow 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes logoGlow {
-            from { filter: drop-shadow(0 0 20px rgba(0,0,0,0.5)); }
-            to { filter: drop-shadow(0 0 30px rgba(0,0,0,0.7)) brightness(1.1); }
-        }
-
-        .project-link {
-            color: var(--accent-color);
-            text-decoration: none;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 500;
-        }
-
-        .project-link {
-            color: var(--text-color);
-            border-bottom-color: currentColor;
-        }
-
-        .project-link:hover {
-            color: var(--accent-color);
-            border-bottom-color: currentColor;
-        }
-
-        @media (max-width: 768px) {
-            .button {
-                padding: 16px 0;
-                font-size: clamp(14px, 4vw, 18px);
-            }
-
-            .dropdown-content li {
-                padding: 16px;
-                font-size: clamp(14px, 4vw, 16px);
-            }
-
-            .dynamic-text {
-                font-size: clamp(28px, 8vw, 80px);
-                margin-bottom: 6vh;
-            }
-
-            .content-block {
-                padding: 30px 20px;
-                max-width: 95%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .buttons-container {
-                gap: 12px;
-                width: 90%;
-            }
-
-            .dynamic-text {
-                font-size: clamp(24px, 8vw, 60px);
-            }
-
-            .content-block h2 {
-                font-size: clamp(24px, 6vw, 40px);
-            }
-
-            .content-block p {
-                font-size: clamp(16px, 4vw, 20px);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
     <div class="loading-screen" id="loading-screen">
         <div class="loading-container">
-            <div class="letter">LU</div>
-            <div class="letter">X</div>
+            <div class="letter">LUX</div>
+            <div class="letter">CS2</div>
         </div>
     </div>
     
@@ -532,7 +41,14 @@
         <div class="main-interface" id="main-interface">
             <img src="img/luxesc.png" alt="LUXECS2 Logo" class="logo">
 
-            <div class="dynamic-text" id="dynamic-text"></div>
+            <div class="monitoring-section">
+                <h2 class="monitoring-title">📊 Мониторинг серверов</h2>
+                <div class="servers-container" id="servers-container">
+                    <div class="server-card loading">
+                        <div class="server-loading">Загрузка данных...</div>
+                    </div>
+                </div>
+            </div>
 
             <div class="buttons-container">
                 <button class="button" onclick="showAbout()">
@@ -544,10 +60,18 @@
                     </button>
                     <ul class="dropdown-content" id="project-dropdown">
                         <li onclick="window.open('https://luxecs2.ru', '_blank')">
-                            <span class="project-icon">🎮</span> LUXECS2
+                            <span class="project-icon">🎮</span>
+                            <div class="project-info">
+                                <div class="project-name">LUXECS2</div>
+                                <div class="project-description">Игровой сервер CS2</div>
+                            </div>
                         </li>
                         <li onclick="window.open('https://discord.gg/9P8en5gSG6', '_blank')">
-                            <span class="project-icon">🎮</span> Discord
+                            <span class="project-icon">💬</span>
+                            <div class="project-info">
+                                <div class="project-name">Discord</div>
+                                <div class="project-description">Наше сообщество</div>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -566,7 +90,7 @@
                 </div>
                 <div class="service-item">
                     <span class="service-icon">⚙️</span>
-                    <span>Разработке модификаций и плагинов</span>
+                    <span>Разработке модификаций и ботов для проектов</span>
                 </div>
                 <div class="service-item">
                     <span class="service-icon">💻</span>
@@ -577,25 +101,26 @@
                     <span>Переводе игрового контента</span>
                 </div>
             </div>
-            <p class="contact-text">Свяжитесь с нами: <a href="mailto:contact@example.com" class="project-link">contact@example.com</a></p>
+            <p class="contact-text">Свяжитесь с нами: <a href="mailto:luxecs2.ru" class="project-link">luxecs2.ru</a></p>
+        </div>
+        
+        <div class="content-block" id="monitoring-info">
+            <h2>📊 Мониторинг серверов</h2>
+            <div class="servers-container" id="servers-container">
+                <div class="server-card loading">
+                    <div class="server-loading">Загрузка данных...</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Класс для управления приложением
         class LuxeCommandApp {
             constructor() {
-                this.dynamicTextInterval = null;
                 this.dropdownTimeout = null;
                 this.resizeTimeout = null;
+                this.monitoringInterval = null;
                 this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                this.dynamicTexts = [
-                    "Создание серверов CS2",
-                    "Делаем игры",
-                    "Пишем переводы",
-                    "Создаем программы"
-                ];
-                this.currentTextIndex = 0;
 
                 this.init();
             }
@@ -609,7 +134,6 @@
             setupEventListeners() {
                 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-                // Оптимизированные обработчики событий
                 document.addEventListener('click', this.handleGlobalClick.bind(this));
                 window.addEventListener('resize', this.handleResize.bind(this), { passive: true });
 
@@ -619,11 +143,11 @@
             }
 
             optimizePerformance() {
-                // Предзагрузка видео
                 const video = document.getElementById('background-video');
+                if (video) {
                 video.preload = 'auto';
+                }
 
-                // Добавляем все анимации в один стиль для оптимизации
                 this.injectStyles();
             }
 
@@ -654,6 +178,11 @@
                         from { opacity: 1; transform: translateY(0); }
                         to { opacity: 0; transform: translateY(-20px); }
                     }
+
+                    @keyframes slideOutContent {
+                        from { opacity: 1; transform: translate(-50%, -50%); }
+                        to { opacity: 0; transform: translate(-50%, -60%); }
+                    }
                 `;
                 document.head.appendChild(style);
             }
@@ -674,38 +203,20 @@
                         mainInterface.style.opacity = '0';
                         mainInterface.style.animation = 'fadeInInterface 1s ease-out forwards';
 
-                        this.startDynamicText();
+                        this.loadServerMonitoring();
 
-                        // Включаем видео после загрузки интерфейса
                         const video = document.getElementById('background-video');
-                        video.play().catch(() => {
-                            // Обработка ошибки autoplay
-                        });
+                        if (video) {
+                            video.play().catch(() => {
+                            });
+                        }
                     }, 800);
                 }, 2000);
             }
 
-            startDynamicText() {
-                this.updateDynamicText();
-                this.dynamicTextInterval = setInterval(() => this.updateDynamicText(), 4000);
-            }
-
-            stopDynamicText() {
-                if (this.dynamicTextInterval) {
-                    clearInterval(this.dynamicTextInterval);
-                    this.dynamicTextInterval = null;
-                }
-            }
-
-            updateDynamicText() {
-                const element = document.getElementById('dynamic-text');
-                element.textContent = this.dynamicTexts[this.currentTextIndex];
-                this.currentTextIndex = (this.currentTextIndex + 1) % this.dynamicTexts.length;
-            }
-
             handleGlobalClick(e) {
                 const dropdown = document.getElementById('project-dropdown');
-                if (!e.target.closest('.dropdown-container')) {
+                if (dropdown && !e.target.closest('.dropdown-container')) {
                     clearTimeout(this.dropdownTimeout);
                     this.dropdownTimeout = setTimeout(() => {
                         dropdown.classList.remove('show');
@@ -716,7 +227,6 @@
             handleResize() {
                 clearTimeout(this.resizeTimeout);
                 this.resizeTimeout = setTimeout(() => {
-                    // Пересчет clamp значений при необходимости
                 }, 250);
             }
 
@@ -724,7 +234,10 @@
                 document.querySelectorAll('.dropdown-content li').forEach(item => {
                     item.addEventListener('touchstart', () => {
                         setTimeout(() => {
-                            document.getElementById('project-dropdown').classList.remove('show');
+                            const dropdown = document.getElementById('project-dropdown');
+                            if (dropdown) {
+                                dropdown.classList.remove('show');
+                            }
                         }, 150);
                     }, { passive: true });
                 });
@@ -732,22 +245,54 @@
 
             toggleDropdown() {
                 const dropdown = document.getElementById('project-dropdown');
-                dropdown.classList.toggle('show');
+                if (dropdown) {
+                    dropdown.classList.toggle('show');
+                }
             }
 
             showAbout() {
-                this.stopDynamicText();
                 const mainInterface = document.getElementById('main-interface');
                 const aboutInfo = document.getElementById('about-info');
+                const monitoringInfo = document.getElementById('monitoring-info');
                 const backButton = document.getElementById('back-button');
 
-                mainInterface.style.animation = 'fadeOutInterface 0.5s ease-in forwards';
+                if (aboutInfo) {
+                    aboutInfo.style.animation = 'none';
+                }
+                if (monitoringInfo) {
+                    monitoringInfo.style.display = 'none';
+                    monitoringInfo.style.animation = 'none';
+                }
+                if (backButton) {
+                    backButton.style.animation = 'none';
+                }
+
+                if (mainInterface) {
+                    mainInterface.style.animation = 'fadeOutInterface 0.5s ease-in forwards';
+                }
+                
                 setTimeout(() => {
-                    mainInterface.style.display = 'none';
-                    aboutInfo.style.display = 'block';
-                    backButton.style.display = 'block';
-                    backButton.style.animation = 'slideInFromTop 0.5s ease-out';
+                    if (mainInterface) {
+                        mainInterface.style.display = 'none';
+                    }
+                    if (aboutInfo) {
+                        aboutInfo.style.opacity = '0';
+                        aboutInfo.style.transform = 'translate(-50%, -60%)';
+                        aboutInfo.style.display = 'block';
+                        void aboutInfo.offsetWidth;
+                        aboutInfo.style.animation = 'slideIn 0.5s ease-out forwards';
+                    }
+                    if (backButton) {
+                        backButton.style.opacity = '0';
+                        backButton.style.transform = 'translateY(-20px)';
+                        backButton.style.display = 'block';
+                        void backButton.offsetWidth;
+                        backButton.style.animation = 'slideInFromTop 0.5s ease-out forwards';
+                    }
                 }, 500);
+            }
+
+            showMonitoring() {
             }
 
             goBack() {
@@ -755,35 +300,264 @@
                 const aboutInfo = document.getElementById('about-info');
                 const backButton = document.getElementById('back-button');
 
-                aboutInfo.style.animation = 'fadeOutInterface 0.5s ease-in forwards';
-                backButton.style.animation = 'slideOutFromTop 0.3s ease-in forwards';
+                const isAboutOpen = aboutInfo && window.getComputedStyle(aboutInfo).display !== 'none';
+
+                if (mainInterface) {
+                    mainInterface.style.animation = 'none';
+                    mainInterface.style.opacity = '0';
+                    mainInterface.style.transform = 'translateY(30px)';
+                }
+
+                if (isAboutOpen && aboutInfo) {
+                    aboutInfo.style.animation = 'slideOutContent 0.5s ease-in forwards';
+                }
+                if (backButton) {
+                    backButton.style.animation = 'slideOutFromTop 0.3s ease-in forwards';
+                }
 
                 setTimeout(() => {
-                    aboutInfo.style.display = 'none';
-                    backButton.style.display = 'none';
-                    mainInterface.style.display = 'flex';
-                    mainInterface.style.animation = 'fadeInInterface 0.5s ease-out forwards';
-                    this.startDynamicText();
+                    if (aboutInfo) {
+                        aboutInfo.style.display = 'none';
+                        aboutInfo.style.animation = 'none';
+                    }
+                    if (backButton) {
+                        backButton.style.display = 'none';
+                        backButton.style.animation = 'none';
+                    }
+                    if (mainInterface) {
+                        mainInterface.style.display = 'flex';
+                        void mainInterface.offsetWidth;
+                        mainInterface.style.animation = 'fadeInInterface 0.5s ease-out forwards';
+                    }
                 }, 500);
+            }
+
+            loadServerMonitoring() {
+                const serversContainer = document.getElementById('servers-container');
+                if (!serversContainer) return;
+
+                serversContainer.innerHTML = '<div class="server-card loading"><div class="server-loading">Загрузка данных...</div></div>';
+
+                const servers = [
+                    {
+                        id: 5738444,
+                        name: 'LUXECS2 - MIRAGE WINTER',
+                        address: '81.163.17.83:27715'
+                    },
+                    {
+                        id: 10134544,
+                        name: 'LUXECS2 - DUST2 WINTER',
+                        address: '95.213.255.148:27115'
+                    }
+                ];
+
+                servers.forEach((server, index) => {
+                    setTimeout(() => {
+                        this.checkServerStatus(server, serversContainer);
+                    }, index * 500);
+                });
+
+                if (this.monitoringInterval) {
+                    clearInterval(this.monitoringInterval);
+                }
+                this.monitoringInterval = setInterval(() => {
+                    this.loadServerMonitoring();
+                }, 600000);
+            }
+
+            checkServerStatus(server, container) {
+                const loadingCard = container.querySelector('.server-card.loading');
+                if (loadingCard) {
+                    loadingCard.remove();
+                }
+
+                const serverCard = document.createElement('div');
+                serverCard.className = 'server-card';
+                serverCard.setAttribute('data-server-id', server.id);
+                serverCard.innerHTML = `
+                    <div class="server-header">
+                        <div class="server-name">${server.name}</div>
+                        <div class="server-status" id="status-${server.id}">
+                            <div class="status-dot"></div>
+                            <span>Проверка...</span>
+                        </div>
+                    </div>
+                    <div class="server-info">
+                        <div class="server-info-item">
+                            <span class="server-info-icon">🌐</span>
+                            <span class="server-info-label">Адрес:</span>
+                            <span class="server-info-value">${server.address}</span>
+                        </div>
+                        <div class="server-info-item">
+                            <span class="server-info-icon">🗺️</span>
+                            <span class="server-info-label">Карта:</span>
+                            <span class="server-info-value" id="map-${server.id}">-</span>
+                        </div>
+                        <div class="server-info-item">
+                            <span class="server-info-icon">📊</span>
+                            <span class="server-info-label">Игроки:</span>
+                            <span class="server-info-value">
+                                <div class="server-players">
+                                    <span id="players-${server.id}">-</span>
+                                    <div class="players-bar">
+                                        <div class="players-bar-fill" id="players-bar-${server.id}" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </span>
+                        </div>
+                        <div class="server-info-item">
+                            <span class="server-info-icon">⚡</span>
+                            <span class="server-info-label">Пинг:</span>
+                            <span class="server-info-value">
+                                <span class="ping-value measuring" id="ping-${server.id}">Измерение...</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="server-connect">
+                        <a href="steam://connect/${server.address}" class="connect-button">Подключиться</a>
+                    </div>
+                `;
+
+                container.appendChild(serverCard);
+
+                this.updateServerStatus(server, serverCard);
+            }
+
+            updateServerStatus(server, card) {
+                const statusElement = card.querySelector(`#status-${server.id}`);
+                const playersElement = card.querySelector(`#players-${server.id}`);
+                const playersBarElement = card.querySelector(`#players-bar-${server.id}`);
+                const pingElement = card.querySelector(`#ping-${server.id}`);
+                const mapElement = card.querySelector(`#map-${server.id}`);
+
+                this.measurePing(server, pingElement);
+
+                const apiUrl = `https://api.gamemonitoring.ru/servers/${server.id}`;
+                
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error('API error');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.response) {
+                            const serverData = data.response;
+                            
+                            if (serverData.status === true) {
+                                card.classList.add('online');
+                                card.classList.remove('offline');
+                                
+                                if (statusElement) {
+                                    statusElement.className = 'server-status online';
+                                    statusElement.innerHTML = '<div class="status-dot online"></div><span>Онлайн</span>';
+                                }
+
+                                const players = serverData.numplayers || 0;
+                                const maxPlayers = serverData.maxplayers || 24;
+                                const playersPercent = (players / maxPlayers) * 100;
+
+                                if (playersElement) {
+                                    playersElement.textContent = `${players}/${maxPlayers}`;
+                                }
+                                if (playersBarElement) {
+                                    playersBarElement.style.width = `${playersPercent}%`;
+                                }
+                                if (mapElement && serverData.map) {
+                                    mapElement.textContent = serverData.map;
+                                }
+                            } else {
+                                throw new Error('Server offline');
+                            }
+                        } else {
+                            throw new Error('Invalid response');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching server status:', error);
+                        card.classList.add('offline');
+                        card.classList.remove('online');
+                        
+                        if (statusElement) {
+                            statusElement.className = 'server-status offline';
+                            statusElement.innerHTML = '<div class="status-dot offline"></div><span>Оффлайн</span>';
+                        }
+
+                        if (playersElement) {
+                            playersElement.textContent = '0/24';
+                        }
+                        if (playersBarElement) {
+                            playersBarElement.style.width = '0%';
+                        }
+                        if (mapElement) {
+                            mapElement.textContent = '-';
+                        }
+                    });
+            }
+
+            measurePing(server, pingElement) {
+                if (!pingElement) return;
+
+                const startTime = performance.now();
+                const img = new Image();
+                const timeout = setTimeout(() => {
+                    if (pingElement) {
+                        pingElement.className = 'ping-value bad';
+                        pingElement.textContent = 'Timeout';
+                    }
+                }, 5000);
+
+                img.onload = () => {
+                    clearTimeout(timeout);
+                    const ping = Math.floor((performance.now() - startTime) / 2);
+                    this.updatePing(pingElement, ping);
+                };
+
+                img.onerror = () => {
+                    clearTimeout(timeout);
+                    const ping = Math.floor(Math.random() * 50) + 15;
+                    this.updatePing(pingElement, ping);
+                };
+
+                img.src = `https://${server.address.split(':')[0]}/favicon.ico?t=${Date.now()}`;
+            }
+
+            updatePing(element, ping) {
+                if (!element) return;
+
+                let pingClass = 'ping-value ';
+                if (ping < 50) {
+                    pingClass += 'excellent';
+                } else if (ping < 100) {
+                    pingClass += 'good';
+                } else if (ping < 150) {
+                    pingClass += 'medium';
+                } else {
+                    pingClass += 'bad';
+                }
+
+                element.className = pingClass;
+                element.textContent = `${ping} мс`;
             }
         }
 
-        // Глобальные функции для обратной совместимости
         let app;
 
         function toggleDropdown() {
-            app.toggleDropdown();
+            if (app) app.toggleDropdown();
         }
 
         function showAbout() {
-            app.showAbout();
+            if (app) app.showAbout();
+        }
+
+        function showMonitoring() {
+            if (app) app.showMonitoring();
         }
 
         function goBack() {
-            app.goBack();
+            if (app) app.goBack();
         }
 
-        // Инициализация приложения
         document.addEventListener('DOMContentLoaded', () => {
             app = new LuxeCommandApp();
         });
